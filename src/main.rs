@@ -4,7 +4,7 @@ mod presentation_module;
 
 use crate::cli::{Cli, Command};
 use crate::data_module::Location;
-use crate::presentation_module::PresentationModule;
+use crate::presentation_module::{PresentationMode, PresentationModule};
 use clap::Parser;
 use data_module::DataModule;
 
@@ -14,7 +14,15 @@ fn main() {
     let cli = Cli::parse();
     match cli.command {
         None => {
-            print_weather_data(&data_module, &presentation_module, cli.json);
+            let presentation_mode = if cli.json {
+                PresentationMode::Json
+            } else if cli.waybar {
+                PresentationMode::Waybar
+            } else {
+                PresentationMode::Cli
+            };
+
+            print_weather_data(&data_module, &presentation_module, presentation_mode);
         }
         Some(Command::SetLocation {
             latitude,
@@ -26,16 +34,12 @@ fn main() {
 fn print_weather_data(
     data_module: &DataModule,
     presentation_module: &PresentationModule,
-    as_json: bool,
+    presentation_mode: PresentationMode,
 ) {
     let result = data_module.get_weather_data();
     match result {
         Ok(weather_data) => {
-            if as_json {
-                presentation_module.print_json(weather_data);
-            } else {
-                presentation_module.print_layout(weather_data);
-            }
+            presentation_module.print(weather_data, presentation_mode);
         }
         Err(e) => {
             eprintln!("{}", e);

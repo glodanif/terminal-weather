@@ -1,28 +1,9 @@
 use crate::data_module::data_module_error::DataModuleError;
 use crate::data_module::location::Location;
-use crate::data_module::weather_data::{CurrentWeather, WeatherData};
+use crate::data_module::weather_data::WeatherData;
 use serde::Deserialize;
 
-#[derive(Deserialize)]
-struct OpenMeteoResponse {
-    current: CurrentWeatherResponse,
-    hourly: HourlyWeatherResponse,
-    daily: DailyWeatherResponse,
-}
-
-#[derive(Deserialize)]
-struct CurrentWeatherResponse {
-    temperature_2m: f32,
-    wind_speed_10m: f32,
-    apparent_temperature: f32,
-    precipitation_probability: f32,
-    cloud_cover: f32,
-    weather_code: u8,
-    is_day: u8,
-    relative_humidity_2m: u8,
-}
-
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct HourlyWeatherResponse {
     pub time: Vec<String>,
     pub temperature_2m: Vec<Option<f32>>,
@@ -35,7 +16,7 @@ pub struct HourlyWeatherResponse {
     pub relative_humidity_2m: Vec<Option<u8>>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct DailyWeatherResponse {
     pub time: Vec<String>,
     pub temperature_2m_max: Vec<f32>,
@@ -71,24 +52,9 @@ impl OpenMeteoApiClient {
             let response_json = response
                 .json()
                 .map_err(|_| DataModuleError::FailedToGetWeatherData)?;
-            let open_meteo_data: OpenMeteoResponse = serde_json::from_value(response_json)
+            let open_meteo_data: WeatherData = serde_json::from_value(response_json)
                 .map_err(|_| DataModuleError::FailedToGetWeatherData)?;
-            Ok(WeatherData {
-                current_weather: CurrentWeather {
-                    temperature: open_meteo_data.current.temperature_2m as f64,
-                    wind_speed: open_meteo_data.current.wind_speed_10m,
-                    apparent_temperature: open_meteo_data.current.apparent_temperature,
-                    precipitation_probability: open_meteo_data.current.precipitation_probability,
-                    cloud_cover: open_meteo_data.current.cloud_cover,
-                    relative_humidity_2m: open_meteo_data.current.relative_humidity_2m,
-                    weather_code: open_meteo_data.current.weather_code,
-                    wmo_emoji: wmo_icon(
-                        open_meteo_data.current.weather_code,
-                        open_meteo_data.current.is_day == 1,
-                    ),
-                    is_day: open_meteo_data.current.is_day == 1,
-                },
-            })
+            Ok(open_meteo_data)
         } else {
             Err(DataModuleError::FailedToGetWeatherData)
         }
@@ -98,28 +64,5 @@ impl OpenMeteoApiClient {
 impl Default for OpenMeteoApiClient {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-fn wmo_icon(code: u8, is_day: bool) -> &'static str {
-    match code {
-        0 => {
-            if is_day {
-                "☀️"
-            } else {
-                "🌙"
-            }
-        }
-        1 | 2 => "⛅",
-        3 => "☁️",
-        45 | 48 => "🌫️",
-        51..=57 => "🌦️",
-        61..=67 => "🌧️",
-        71..=77 => "❄️",
-        80..=82 => "🌧️",
-        85 | 86 => "🌨️",
-        95 => "⛈️",
-        96 | 99 => "⛈️",
-        _ => "",
     }
 }

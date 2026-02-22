@@ -1,0 +1,123 @@
+#[derive(Debug)]
+pub struct Wmo {
+    pub code: u8,
+    pub is_day: bool,
+    pub emoji: &'static str,
+    pub description: &'static str,
+}
+
+impl Wmo {
+    pub fn new(code: u8, is_day: bool) -> Self {
+        Self {
+            code,
+            is_day,
+            emoji: wmo_emoji(code, is_day),
+            description: wmo_description(code),
+        }
+    }
+}
+
+fn wmo_emoji(code: u8, is_day: bool) -> &'static str {
+    match code {
+        // Clear sky
+        0 => {
+            if is_day {
+                "☀️"
+            } else {
+                "🌙"
+            }
+        }
+
+        // Mainly clear, partly cloudy, overcast
+        1 => {
+            if is_day {
+                "🌤️"
+            } else {
+                "🌙"
+            }
+        }
+        2 => {
+            if is_day {
+                "⛅"
+            } else {
+                "☁️"
+            }
+        }
+        3 => "☁️",
+
+        // Fog
+        45 | 48 => "🌫️",
+
+        // Drizzle
+        51 | 53 | 55 => "🌦️",
+        56 | 57 => "🌨️", // freezing drizzle
+
+        // Rain
+        61 | 63 | 65 => "🌧️",
+        66 | 67 => "🌨️", // freezing rain
+
+        // Snow
+        71 | 73 | 75 => "❄️",
+        77 => "🌨️", // snow grains
+
+        // Rain showers
+        80 | 81 | 82 => "🌦️",
+
+        // Snow showers
+        85 | 86 => "🌨️",
+
+        // Thunderstorm
+        95 => "⛈️",
+        96 | 99 => "⛈️",
+
+        _ => "🌡️",
+    }
+}
+
+fn wmo_description(code: u8) -> &'static str {
+    match code {
+        // Clear / cloudy
+        0 => "Clear sky",
+        1 => "Mainly clear",
+        2 => "Partly cloudy",
+        3 => "Overcast",
+
+        // Fog
+        45 => "Fog",
+        48 => "Rime fog",
+
+        // Drizzle
+        51 => "Light drizzle",
+        53 => "Moderate drizzle",
+        55 => "Dense drizzle",
+        56 => "Light freezing drizzle",
+        57 => "Heavy freezing drizzle",
+
+        // Rain
+        61 => "Slight rain",
+        63 => "Moderate rain",
+        65 => "Heavy rain",
+        66 => "Light freezing rain",
+        67 => "Heavy freezing rain",
+
+        // Snow
+        71 => "Slight snowfall",
+        73 => "Moderate snowfall",
+        75 => "Heavy snowfall",
+        77 => "Snow grains",
+
+        // Showers
+        80 => "Slight showers",
+        81 => "Moderate showers",
+        82 => "Violent showers",
+        85 => "Slight snow showers",
+        86 => "Heavy snow showers",
+
+        // Thunderstorm
+        95 => "Thunderstorm",
+        96 => "Thunderstorm with slight hail",
+        99 => "Thunderstorm with heavy hail",
+
+        _ => "Unknown",
+    }
+}

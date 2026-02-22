@@ -8,6 +8,9 @@ pub struct Cli {
 
     #[arg(long, short)]
     pub json: bool,
+
+    #[arg(long, short)]
+    pub waybar: bool,
 }
 
 #[derive(Subcommand)]
