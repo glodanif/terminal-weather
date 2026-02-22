@@ -38,7 +38,7 @@ impl Printer for WaybarPrinter {
             text: weather_text,
             tooltip: tooltip_text,
         };
-        let result = serde_json::to_string_pretty(&waybar_json);
+        let result = serde_json::to_string(&waybar_json);
         match result {
             Ok(json_string) => println!("{}", json_string),
             Err(e) => {
