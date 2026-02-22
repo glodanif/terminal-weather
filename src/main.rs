@@ -19,7 +19,7 @@ fn main() {
             } else if cli.waybar {
                 PresentationMode::Waybar
             } else {
-                PresentationMode::Cli
+                PresentationMode::Tui
             };
 
             print_weather_data(&data_module, &presentation_module, presentation_mode);

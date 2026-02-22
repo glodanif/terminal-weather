@@ -1,7 +1,5 @@
 #[derive(Debug)]
 pub struct Wmo {
-    pub code: u8,
-    pub is_day: bool,
     pub emoji: &'static str,
     pub description: &'static str,
 }
@@ -9,8 +7,6 @@ pub struct Wmo {
 impl Wmo {
     pub fn new(code: u8, is_day: bool) -> Self {
         Self {
-            code,
-            is_day,
             emoji: wmo_emoji(code, is_day),
             description: wmo_description(code),
         }

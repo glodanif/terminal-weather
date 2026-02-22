@@ -12,10 +12,10 @@ pub struct WeatherData {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CurrentWeather {
     pub temperature_2m: f32,
-    pub wind_speed_10m: f32,
     pub apparent_temperature: f32,
-    pub precipitation_probability: f32,
-    pub cloud_cover: f32,
+    pub wind_speed_10m: f32,
+    pub precipitation_probability: u8,
+    pub cloud_cover: u8,
     pub relative_humidity_2m: u8,
     pub weather_code: u8,
     pub is_day: u8,

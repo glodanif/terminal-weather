@@ -1,38 +1,31 @@
 use crate::data_module::WeatherData;
-use crate::presentation_module::cli_printer::CliPrinter;
+use crate::presentation_module::printer::Printer;
+use crate::presentation_module::printer::json_printer::JsonPrinter;
+use crate::presentation_module::printer::tui_printer::TuiPrinter;
+use crate::presentation_module::printer::waybar_printer::WaybarPrinter;
 
-mod cli_printer;
+mod printer;
 mod wind_speed;
 mod wmo;
 
 pub enum PresentationMode {
-    Cli,
+    Tui,
     Json,
     Waybar,
 }
 
-pub struct PresentationModule {
-    cli_printer: CliPrinter,
-}
+pub struct PresentationModule {}
 
 impl PresentationModule {
     pub fn new() -> Self {
-        PresentationModule {
-            cli_printer: CliPrinter::default(),
-        }
+        Self {}
     }
 
     pub fn print(&self, weather_data: WeatherData, presentation_mode: PresentationMode) {
         match presentation_mode {
-            PresentationMode::Cli => {
-                self.cli_printer.print_layout(weather_data);
-            }
-            PresentationMode::Json => {
-                self.cli_printer.print_json(weather_data);
-            }
-            PresentationMode::Waybar => {
-                self.cli_printer.print_waybar(weather_data);
-            }
+            PresentationMode::Waybar => WaybarPrinter::new().print(weather_data),
+            PresentationMode::Json => JsonPrinter::new().print(weather_data),
+            PresentationMode::Tui => TuiPrinter::new().print(weather_data),
         }
     }
 }

@@ -1,6 +1,5 @@
 #[derive(Debug)]
 pub struct WindSpeed {
-    pub wind_speed: f32,
     pub emoji: &'static str,
     pub description: &'static str,
 }
@@ -8,7 +7,6 @@ pub struct WindSpeed {
 impl WindSpeed {
     pub fn new(wind_speed: f32) -> Self {
         Self {
-            wind_speed,
             emoji: wind_emoji(wind_speed),
             description: wind_description(wind_speed),
         }
