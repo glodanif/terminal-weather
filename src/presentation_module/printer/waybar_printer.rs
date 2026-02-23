@@ -1,5 +1,6 @@
 use crate::data_module::WeatherData;
 use crate::presentation_module::printer::Printer;
+use crate::presentation_module::wind_speed::WindSpeed;
 use crate::presentation_module::wmo::Wmo;
 use serde::Serialize;
 
@@ -22,17 +23,23 @@ impl Printer for WaybarPrinter {
         let current_weather = weather_data.current;
         let current_weather_units = weather_data.current_units;
         let wmo = Wmo::new(current_weather.weather_code, current_weather.is_day == 1);
+        let wind_speed = WindSpeed::new(current_weather.wind_speed_10m);
         let weather_text = format!(
             "{} {:.1}{}",
             wmo.emoji, current_weather.temperature_2m, current_weather_units.temperature_2m
         );
         let tooltip_text = format!(
-            "{}\nTemperature: {:.1}{}\nFeels like: {:.1}{}",
+            "{}\n{}\nTemperature: {:.1}{}\nFeels like: {:.1}{}\nPrecipitation: {}{}\nCloud cover: {}{}",
             wmo.description,
+            wind_speed.description,
             current_weather.temperature_2m,
             current_weather_units.temperature_2m,
             current_weather.apparent_temperature,
-            current_weather_units.apparent_temperature
+            current_weather_units.apparent_temperature,
+            current_weather.precipitation_probability,
+            current_weather_units.precipitation_probability,
+            current_weather.cloud_cover,
+            current_weather_units.cloud_cover,
         );
         let waybar_json = WaybarJson {
             text: weather_text,
