@@ -27,10 +27,10 @@ impl Printer for WaybarPrinter {
             wmo.emoji, current_weather.temperature_2m, current_weather_units.temperature_2m
         );
         let tooltip_text = format!(
-            "Temperature: {:.1}{}\n{}\nFeels like: {:.1}{}",
+            "{}\nTemperature: {:.1}{}\nFeels like: {:.1}{}",
+            wmo.description,
             current_weather.temperature_2m,
             current_weather_units.temperature_2m,
-            wmo.description,
             current_weather.apparent_temperature,
             current_weather_units.apparent_temperature
         );
