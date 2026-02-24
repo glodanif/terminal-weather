@@ -1,12 +1,11 @@
-use crate::data_module::open_meteo_api_client::{DailyWeatherResponse, HourlyWeatherResponse};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
 pub struct WeatherData {
     pub current: CurrentWeather,
     pub current_units: CurrentUnits,
-    pub hourly: HourlyWeatherResponse,
-    pub daily: DailyWeatherResponse,
+    pub hourly: HourlyForecast,
+    pub daily:DailyForecast,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -32,24 +31,23 @@ pub struct CurrentUnits {
     pub weather_code: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 struct HourlyForecast {
-    pub forecast_items: [HourlyForecastItem; 24],
+    pub time: Vec<String>,
+    pub temperature_2m: Vec<Option<f32>>,
+    pub wind_speed_10m: Vec<Option<f32>>,
+    pub apparent_temperature: Vec<Option<f32>>,
+    pub precipitation_probability: Vec<Option<f32>>,
+    pub cloud_cover: Vec<Option<f32>>,
+    pub relative_humidity_2m: Vec<Option<u8>>,
+    pub weather_code: Vec<Option<u8>>,
+    pub is_day: Vec<Option<u8>>,
 }
 
-#[derive(Debug)]
-struct HourlyForecastItem {
-    pub time: String,
-    pub temperature: f64,
-}
-
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 struct DailyForecast {
-    pub forecast_items: [DailyForecastItem; 7],
-}
-
-#[derive(Debug)]
-struct DailyForecastItem {
-    pub date: String,
-    pub temperature: f64,
+    pub time: Vec<String>,
+    pub temperature_2m_max: Vec<Option<f32>>,
+    pub temperature_2m_min: Vec<Option<f32>>,
+    pub weather_code: Vec<Option<u8>>,
 }

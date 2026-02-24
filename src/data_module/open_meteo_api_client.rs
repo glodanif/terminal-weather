@@ -1,28 +1,6 @@
 use crate::data_module::data_module_error::DataModuleError;
 use crate::data_module::location::Location;
 use crate::data_module::weather_data::WeatherData;
-use serde::Deserialize;
-
-#[derive(Debug, Deserialize)]
-pub struct HourlyWeatherResponse {
-    pub time: Vec<String>,
-    pub temperature_2m: Vec<Option<f32>>,
-    pub wind_speed_10m: Vec<Option<f32>>,
-    pub apparent_temperature: Vec<Option<f32>>,
-    pub precipitation_probability: Vec<Option<f32>>,
-    pub cloud_cover: Vec<Option<f32>>,
-    pub weather_code: Vec<Option<u8>>,
-    pub is_day: Vec<Option<u8>>,
-    pub relative_humidity_2m: Vec<Option<u8>>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct DailyWeatherResponse {
-    pub time: Vec<String>,
-    pub temperature_2m_max: Vec<f32>,
-    pub temperature_2m_min: Vec<f32>,
-    pub weather_code: Vec<u8>,
-}
 
 const OPEN_METEO_API_URL: &str = "https://api.open-meteo.com/v1/forecast";
 const OPEN_METEO_API_HOURLY_VALUES: &str = "temperature_2m,wind_speed_10m,apparent_temperature,weather_code,cloud_cover,precipitation_probability,is_day,relative_humidity_2m";

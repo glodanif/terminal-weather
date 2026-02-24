@@ -21,7 +21,6 @@ fn main() {
             } else {
                 PresentationMode::Tui
             };
-
             print_weather_data(&data_module, &presentation_module, presentation_mode);
         }
         Some(Command::SetLocation {
