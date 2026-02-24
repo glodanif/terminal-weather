@@ -32,7 +32,7 @@ pub struct CurrentUnits {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct HourlyForecast {
+pub struct HourlyForecast {
     pub time: Vec<String>,
     pub temperature_2m: Vec<Option<f32>>,
     pub wind_speed_10m: Vec<Option<f32>>,
@@ -45,7 +45,7 @@ struct HourlyForecast {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct DailyForecast {
+pub struct DailyForecast {
     pub time: Vec<String>,
     pub temperature_2m_max: Vec<Option<f32>>,
     pub temperature_2m_min: Vec<Option<f32>>,
