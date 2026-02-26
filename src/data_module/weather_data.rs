@@ -17,7 +17,7 @@ pub struct CurrentWeather {
     pub cloud_cover: u8,
     pub relative_humidity_2m: u8,
     pub weather_code: u8,
-    pub is_day: u8,
+    pub is_day: f32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -41,7 +41,7 @@ pub struct HourlyForecast {
     pub cloud_cover: Vec<Option<f32>>,
     pub relative_humidity_2m: Vec<Option<u8>>,
     pub weather_code: Vec<Option<u8>>,
-    pub is_day: Vec<Option<u8>>,
+    pub is_day: Vec<Option<f32>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

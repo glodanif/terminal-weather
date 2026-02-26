@@ -64,7 +64,7 @@ pub fn create_json_json_response(weather_data: WeatherData) -> JsonJson {
         cloud_cover: current_weather.cloud_cover,
         relative_humidity: current_weather.relative_humidity_2m,
         weather_code: current_weather.weather_code,
-        is_day: current_weather.is_day == 1,
+        is_day: current_weather.is_day == 1.0,
     };
 
     let daily = weather_data.daily;
@@ -87,7 +87,7 @@ pub fn create_json_json_response(weather_data: WeatherData) -> JsonJson {
                         cloud_cover: hourly.cloud_cover[h]? as u8,
                         relative_humidity: hourly.relative_humidity_2m[h]?,
                         weather_code: hourly.weather_code[h]?,
-                        is_day: hourly.is_day[h]? == 1,
+                        is_day: hourly.is_day[h]? == 1.0,
                     })
                 })
                 .collect();

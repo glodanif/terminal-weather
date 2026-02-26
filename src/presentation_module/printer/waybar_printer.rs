@@ -22,7 +22,7 @@ impl Printer for WaybarPrinter {
     fn print(&self, weather_data: WeatherData) {
         let current_weather = weather_data.current;
         let current_weather_units = weather_data.current_units;
-        let wmo = Wmo::new(current_weather.weather_code, current_weather.is_day == 1);
+        let wmo = Wmo::new(current_weather.weather_code, current_weather.is_day == 1.0);
         let wind_speed = WindSpeed::new(current_weather.wind_speed_10m);
         let weather_text = format!(
             "{} {:.1}{}",

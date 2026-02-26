@@ -22,7 +22,7 @@ impl Printer for TuiPrinter {
 fn print_current_weather_data(weather_data: WeatherData) {
     let wmo = Wmo::new(
         weather_data.current.weather_code,
-        weather_data.current.is_day == 1,
+        weather_data.current.is_day == 1.0,
     );
     let wind_speed = WindSpeed::new(weather_data.current.wind_speed_10m);
     println!("{} | {}", wmo.emoji, wmo.description);
