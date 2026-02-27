@@ -72,7 +72,6 @@ pub fn create_json_json_response(weather_data: WeatherData) -> JsonJson {
 
     let daily_forecasts: Vec<DailyForecastJson> = (0..daily.time.len())
         .map(|i| {
-            // Each day has 24 hourly entries
             let hour_start = i * 24;
             let hour_end = (hour_start + 24).min(hourly.time.len());
 

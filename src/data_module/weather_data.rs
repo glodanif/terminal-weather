@@ -5,7 +5,7 @@ pub struct WeatherData {
     pub current: CurrentWeather,
     pub current_units: CurrentUnits,
     pub hourly: HourlyForecast,
-    pub daily:DailyForecast,
+    pub daily: DailyForecast,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

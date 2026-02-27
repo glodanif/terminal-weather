@@ -14,12 +14,14 @@ impl TuiPrinter {
 impl Printer for TuiPrinter {
     fn print(&self, weather_data: WeatherData) {
         println!("---------------------------------");
-        print_current_weather_data(weather_data);
+        print_current_weather_data(&weather_data);
+        println!("---------------------------------");
+        print_hourly_forecast_data(&weather_data);
         println!("---------------------------------");
     }
 }
 
-fn print_current_weather_data(weather_data: WeatherData) {
+fn print_current_weather_data(weather_data: &WeatherData) {
     let wmo = Wmo::new(
         weather_data.current.weather_code,
         weather_data.current.is_day == 1.0,
@@ -53,6 +55,30 @@ fn print_current_weather_data(weather_data: WeatherData) {
         "Humidity: {}{}",
         weather_data.current.relative_humidity_2m, weather_data.current_units.relative_humidity_2m
     );
+}
+
+fn print_hourly_forecast_data(weather_data: &WeatherData) {
+    let mut hours_line = String::new();
+    let mut temperature_line = String::new();
+    let mut precipitation_probability_line = String::new();
+    for i in 0..24 {
+        let hours: Vec<_> = weather_data.hourly.time[i].split('T').collect();
+        hours_line += format!("|{}", hours[1]).as_str();
+        let temperature = weather_data.hourly.temperature_2m[i];
+        match temperature {
+            Some(t) => temperature_line += format!("|{:.1}°", t).as_str(),
+            None => temperature_line += "|?°",
+        }
+        let precipitation_probability = weather_data.hourly.precipitation_probability[i];
+        match precipitation_probability {
+            Some(p) => precipitation_probability_line += format!("|{}%", p).as_str(),
+            None => precipitation_probability_line += "|?%",
+        }
+    }
+    println!("{}|", hours_line);
+    println!("---------------------------------");
+    println!("{}|", temperature_line);
+    println!("{}|", precipitation_probability_line);
 }
 
 impl Default for TuiPrinter {
