@@ -18,7 +18,7 @@ fn wmo_emoji(code: u8, is_day: bool) -> &'static str {
         // Clear sky
         0 => {
             if is_day {
-                "☀️"
+                "🌞"  // instead of "☀️"
             } else {
                 "🌙"
             }
@@ -27,7 +27,7 @@ fn wmo_emoji(code: u8, is_day: bool) -> &'static str {
         // Mainly clear, partly cloudy, overcast
         1 => {
             if is_day {
-                "🌤️"
+                "🌤"  // without FE0F
             } else {
                 "🌙"
             }
@@ -36,37 +36,37 @@ fn wmo_emoji(code: u8, is_day: bool) -> &'static str {
             if is_day {
                 "⛅"
             } else {
-                "☁️"
+                "🌥"  // instead of "☁️"
             }
         }
-        3 => "☁️",
+        3 => "🌥",  // instead of "☁️"
 
         // Fog
-        45 | 48 => "🌫️",
+        45 | 48 => "🌫",  // without FE0F
 
         // Drizzle
-        51 | 53 | 55 => "🌦️",
-        56 | 57 => "🌨️", // freezing drizzle
+        51 | 53 | 55 => "🌦",  // without FE0F
+        56 | 57 => "🌨",
 
         // Rain
-        61 | 63 | 65 => "🌧️",
-        66 | 67 => "🌨️", // freezing rain
+        61 | 63 | 65 => "🌧",  // without FE0F
+        66 | 67 => "🌨",
 
         // Snow
         71 | 73 | 75 => "❄️",
-        77 => "🌨️", // snow grains
+        77 => "🌨",
 
         // Rain showers
-        80 | 81 | 82 => "🌦️",
+        80 | 81 | 82 => "🌦",
 
         // Snow showers
-        85 | 86 => "🌨️",
+        85 | 86 => "🌨",
 
         // Thunderstorm
-        95 => "⛈️",
-        96 | 99 => "⛈️",
+        95 => "⛈",  // without FE0F
+        96 | 99 => "⛈",
 
-        _ => "🌡️",
+        _ => "🌡",  // without FE0F
     }
 }
 
