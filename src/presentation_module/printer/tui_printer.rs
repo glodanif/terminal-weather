@@ -122,8 +122,9 @@ fn print_hourly_forecast_data(weather_data: &WeatherData) {
         });
     }
 
-    // Emojis are all natively 2 terminal columns wide.
-    // Other cells use .chars().count() as display width (e.g. ° is 2 bytes but 1 column).
+    // All cells use .chars().count() as display width (e.g. ° is 2 bytes but 1 column).
+    // Icon cells pass an explicit display_width since nerd chars (1 col) and emoji (2 cols)
+    // both appear as a single codepoint to .chars().count().
     let col_width = (0..12)
         .map(|i| {
             [&hours[i], &temps[i], &apparent_temps[i], &precip_probs[i]]
@@ -134,13 +135,13 @@ fn print_hourly_forecast_data(weather_data: &WeatherData) {
         })
         .max()
         .unwrap()
-        .max(2); // at least 2 for emoji width
+        .max(1);
 
-    let print_row = |cells: &[String], emoji: bool| {
+    let print_row = |cells: &[String], display_width: usize| {
         let row: String = cells
             .iter()
             .map(|c| {
-                let dw = if emoji { 2 } else { c.chars().count() };
+                let dw = if display_width > 0 { display_width } else { c.chars().count() };
                 let padding = col_width.saturating_sub(dw);
                 let left_pad = padding / 2;
                 let right_pad = padding - left_pad;
@@ -150,12 +151,12 @@ fn print_hourly_forecast_data(weather_data: &WeatherData) {
         println!("{}|", row);
     };
 
-    print_row(&hours, false);
+    print_row(&hours, 0);
     println!("{}", "-".repeat((col_width + 1) * 12 + 1));
-    print_row(&emojis, true);
-    print_row(&temps, false);
-    print_row(&apparent_temps, false);
-    print_row(&precip_probs, false);
+    print_row(&emojis, 1); // nerd font chars are 1 terminal column wide
+    print_row(&temps, 0);
+    print_row(&apparent_temps, 0);
+    print_row(&precip_probs, 0);
 }
 
 impl Default for TuiPrinter {
