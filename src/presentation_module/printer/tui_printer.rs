@@ -94,7 +94,7 @@ fn print_hourly_forecast_data(weather_data: &WeatherData) {
         let is_day = weather_data.hourly.is_day[a].unwrap_or(0.0);
         emojis.push(match weather_code {
             None => "?".to_string(),
-            Some(code) => Wmo::new(code, is_day == 1.0).emoji.to_string(),
+            Some(code) => Wmo::new(code, is_day == 1.0).nerd_character.to_string(),
         });
 
         temps.push(match avg_opt(
@@ -122,13 +122,13 @@ fn print_hourly_forecast_data(weather_data: &WeatherData) {
         });
     }
 
-    // All non-emoji rows are pure ASCII, so .len() == display width.
     // Emojis are all natively 2 terminal columns wide.
+    // Other cells use .chars().count() as display width (e.g. ° is 2 bytes but 1 column).
     let col_width = (0..12)
         .map(|i| {
             [&hours[i], &temps[i], &apparent_temps[i], &precip_probs[i]]
                 .iter()
-                .map(|s| s.len())
+                .map(|s| s.chars().count())
                 .max()
                 .unwrap()
         })
@@ -140,7 +140,7 @@ fn print_hourly_forecast_data(weather_data: &WeatherData) {
         let row: String = cells
             .iter()
             .map(|c| {
-                let dw = if emoji { 2 } else { c.len() };
+                let dw = if emoji { 2 } else { c.chars().count() };
                 let padding = col_width.saturating_sub(dw);
                 let left_pad = padding / 2;
                 let right_pad = padding - left_pad;
