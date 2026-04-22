@@ -26,7 +26,7 @@ impl Printer for WaybarPrinter {
         let wind_speed = WindSpeed::new(current_weather.wind_speed_10m);
         let weather_text = format!(
             "{} {:.1}{}",
-            wmo.emoji, current_weather.temperature_2m, current_weather_units.temperature_2m
+            wmo.nerd_character, current_weather.temperature_2m, current_weather_units.temperature_2m
         );
         let tooltip_text = format!(
             "{}\n{}\nTemperature: {:.1}{}\nFeels like: {:.1}{}\nPrecipitation: {}{}\nCloud cover: {}{}",
