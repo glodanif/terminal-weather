@@ -209,21 +209,7 @@ fn print_hourly_forecast_data(weather_data: &WeatherData, col_width: usize) {
         println!("{}|", row);
     };
 
-    let print_inner_sep = || match highlight_col {
-        None => println!("{}", "-".repeat(total_width)),
-        Some(col) => {
-            let seg_start = col * (col_width + 1);
-            let seg_len = col_width + 1;
-            println!(
-                "{}{}{}{}{}",
-                "-".repeat(seg_start),
-                HI_ON,
-                "-".repeat(seg_len),
-                HI_OFF,
-                "-".repeat(total_width - seg_start - seg_len)
-            );
-        }
-    };
+    let print_inner_sep = || println!("{}", "-".repeat(total_width));
 
     print_row(&hours, 0);
     print_inner_sep();
