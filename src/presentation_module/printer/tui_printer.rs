@@ -2,6 +2,10 @@ use crate::data_module::WeatherData;
 use crate::presentation_module::printer::Printer;
 use crate::presentation_module::wind_speed::WindSpeed;
 use crate::presentation_module::wmo::Wmo;
+use chrono::{Local, Timelike};
+
+const HI_ON: &str = "\x1b[1;33m";
+const HI_OFF: &str = "\x1b[0m";
 
 pub struct TuiPrinter {}
 
@@ -13,12 +17,63 @@ impl TuiPrinter {
 
 impl Printer for TuiPrinter {
     fn print(&self, weather_data: WeatherData) {
-        println!("---------------------------------");
+        let col_width = compute_col_width(&weather_data);
+        let divider = "-".repeat((col_width + 1) * 12 + 1);
+        println!("{}", divider);
         print_current_weather_data(&weather_data);
-        println!("---------------------------------");
-        print_hourly_forecast_data(&weather_data);
-        println!("---------------------------------");
+        println!("{}", divider);
+        print_hourly_forecast_data(&weather_data, col_width);
+        println!("{}", divider);
     }
+}
+
+fn compute_col_width(weather_data: &WeatherData) -> usize {
+    (0..12)
+        .map(|i| {
+            let a = i * 2;
+            let b = a + 1;
+            let parts: Vec<_> = weather_data.hourly.time[a].split('T').collect();
+            [
+                parts[1].chars().count(),
+                match avg_opt(
+                    weather_data.hourly.temperature_2m[a],
+                    weather_data.hourly.temperature_2m[b],
+                ) {
+                    Some(t) => format!("{:.1}°", t).chars().count(),
+                    None => 2,
+                },
+                match avg_opt(
+                    weather_data.hourly.apparent_temperature[a],
+                    weather_data.hourly.apparent_temperature[b],
+                ) {
+                    Some(v) => format!("{:.1}°", v).chars().count(),
+                    None => 2,
+                },
+                match avg_opt(
+                    weather_data.hourly.precipitation_probability[a],
+                    weather_data.hourly.precipitation_probability[b],
+                ) {
+                    Some(p) => format!("{:.0}%", p).chars().count(),
+                    None => 2,
+                },
+            ]
+            .into_iter()
+            .max()
+            .unwrap()
+        })
+        .max()
+        .unwrap()
+        .max(1)
+}
+
+fn find_current_col(weather_data: &WeatherData) -> Option<usize> {
+    let now = Local::now();
+    let current_date = now.format("%Y-%m-%d").to_string();
+    let current_slot = now.hour() as usize / 2;
+    (0..12).find(|&i| {
+        let parts: Vec<_> = weather_data.hourly.time[i * 2].split('T').collect();
+        parts[0] == current_date && i == current_slot
+    })
 }
 
 fn print_current_weather_data(weather_data: &WeatherData) {
@@ -73,7 +128,7 @@ fn max_opt_code(a: Option<u8>, b: Option<u8>) -> Option<u8> {
     }
 }
 
-fn print_hourly_forecast_data(weather_data: &WeatherData) {
+fn print_hourly_forecast_data(weather_data: &WeatherData, col_width: usize) {
     let mut hours: Vec<String> = Vec::new();
     let mut emojis: Vec<String> = Vec::new();
     let mut temps: Vec<String> = Vec::new();
@@ -122,37 +177,56 @@ fn print_hourly_forecast_data(weather_data: &WeatherData) {
         });
     }
 
+    let highlight_col = find_current_col(weather_data);
+    let total_width = (col_width + 1) * 12 + 1;
+
     // All cells use .chars().count() as display width (e.g. ° is 2 bytes but 1 column).
     // Icon cells pass an explicit display_width since nerd chars (1 col) and emoji (2 cols)
     // both appear as a single codepoint to .chars().count().
-    let col_width = (0..12)
-        .map(|i| {
-            [&hours[i], &temps[i], &apparent_temps[i], &precip_probs[i]]
-                .iter()
-                .map(|s| s.chars().count())
-                .max()
-                .unwrap()
-        })
-        .max()
-        .unwrap()
-        .max(1);
-
     let print_row = |cells: &[String], display_width: usize| {
         let row: String = cells
             .iter()
-            .map(|c| {
+            .enumerate()
+            .map(|(idx, c)| {
                 let dw = if display_width > 0 { display_width } else { c.chars().count() };
                 let padding = col_width.saturating_sub(dw);
                 let left_pad = padding / 2;
                 let right_pad = padding - left_pad;
-                format!("|{}{}{}", " ".repeat(left_pad), c, " ".repeat(right_pad))
+                if Some(idx) == highlight_col {
+                    format!(
+                        "|{}{}{}{}{}",
+                        " ".repeat(left_pad),
+                        HI_ON,
+                        c,
+                        HI_OFF,
+                        " ".repeat(right_pad)
+                    )
+                } else {
+                    format!("|{}{}{}", " ".repeat(left_pad), c, " ".repeat(right_pad))
+                }
             })
             .collect();
         println!("{}|", row);
     };
 
+    let print_inner_sep = || match highlight_col {
+        None => println!("{}", "-".repeat(total_width)),
+        Some(col) => {
+            let seg_start = col * (col_width + 1);
+            let seg_len = col_width + 1;
+            println!(
+                "{}{}{}{}{}",
+                "-".repeat(seg_start),
+                HI_ON,
+                "-".repeat(seg_len),
+                HI_OFF,
+                "-".repeat(total_width - seg_start - seg_len)
+            );
+        }
+    };
+
     print_row(&hours, 0);
-    println!("{}", "-".repeat((col_width + 1) * 12 + 1));
+    print_inner_sep();
     print_row(&emojis, 1); // nerd font chars are 1 terminal column wide
     print_row(&temps, 0);
     print_row(&apparent_temps, 0);
