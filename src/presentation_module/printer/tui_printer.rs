@@ -82,14 +82,13 @@ fn print_current_weather_data(weather_data: &WeatherData) {
         weather_data.current.is_day == 1.0,
     );
     let wind_speed = WindSpeed::new(weather_data.current.wind_speed_10m);
-    println!("{} | {}", wmo.emoji, wmo.description);
+    println!("{}  | {}", wmo.emoji, wmo.description);
     println!(
-        "Temperature: {:.1}{}",
-        weather_data.current.temperature_2m, weather_data.current_units.temperature_2m
-    );
-    println!(
-        "Feels like: {:.1}{}",
-        weather_data.current.apparent_temperature, weather_data.current_units.apparent_temperature
+        "Temperature: {:.1}{} ({:.1}{})",
+        weather_data.current.temperature_2m,
+        weather_data.current_units.temperature_2m,
+        weather_data.current.apparent_temperature,
+        weather_data.current_units.apparent_temperature
     );
     println!(
         "Wind speed: {:.1}{} | {}",
@@ -152,29 +151,35 @@ fn print_hourly_forecast_data(weather_data: &WeatherData, col_width: usize) {
             Some(code) => Wmo::new(code, is_day == 1.0).nerd_character.to_string(),
         });
 
-        temps.push(match avg_opt(
-            weather_data.hourly.temperature_2m[a],
-            weather_data.hourly.temperature_2m[b],
-        ) {
-            Some(t) => format!("{:.1}°", t),
-            None => "?°".to_string(),
-        });
+        temps.push(
+            match avg_opt(
+                weather_data.hourly.temperature_2m[a],
+                weather_data.hourly.temperature_2m[b],
+            ) {
+                Some(t) => format!("{:.1}°", t),
+                None => "?°".to_string(),
+            },
+        );
 
-        apparent_temps.push(match avg_opt(
-            weather_data.hourly.apparent_temperature[a],
-            weather_data.hourly.apparent_temperature[b],
-        ) {
-            Some(v) => format!("{:.1}°", v),
-            None => "?°".to_string(),
-        });
+        apparent_temps.push(
+            match avg_opt(
+                weather_data.hourly.apparent_temperature[a],
+                weather_data.hourly.apparent_temperature[b],
+            ) {
+                Some(v) => format!("{:.1}°", v),
+                None => "?°".to_string(),
+            },
+        );
 
-        precip_probs.push(match avg_opt(
-            weather_data.hourly.precipitation_probability[a],
-            weather_data.hourly.precipitation_probability[b],
-        ) {
-            Some(p) => format!("{:.0}%", p),
-            None => "?%".to_string(),
-        });
+        precip_probs.push(
+            match avg_opt(
+                weather_data.hourly.precipitation_probability[a],
+                weather_data.hourly.precipitation_probability[b],
+            ) {
+                Some(p) => format!("{:.0}%", p),
+                None => "?%".to_string(),
+            },
+        );
     }
 
     let highlight_col = find_current_col(weather_data);
@@ -188,7 +193,11 @@ fn print_hourly_forecast_data(weather_data: &WeatherData, col_width: usize) {
             .iter()
             .enumerate()
             .map(|(idx, c)| {
-                let dw = if display_width > 0 { display_width } else { c.chars().count() };
+                let dw = if display_width > 0 {
+                    display_width
+                } else {
+                    c.chars().count()
+                };
                 let padding = col_width.saturating_sub(dw);
                 let left_pad = padding / 2;
                 let right_pad = padding - left_pad;
